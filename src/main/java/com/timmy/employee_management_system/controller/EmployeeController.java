@@ -2,9 +2,11 @@ package com.timmy.employee_management_system.controller;
 
 import com.timmy.employee_management_system.dto.CreateEmployeeDto;
 import com.timmy.employee_management_system.dto.ImportEmployeesExcelResDto;
+import com.timmy.employee_management_system.dto.PartialUpdateEmployeeDto;
 import com.timmy.employee_management_system.entity.Employee;
 import com.timmy.employee_management_system.service.EmployeeService;
 import com.timmy.employee_management_system.service.ExcelService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -24,7 +26,6 @@ public class EmployeeController {
 
     @PostMapping("/employees")
     Employee handleCreateEmployee ( @RequestBody @Valid CreateEmployeeDto e){
-        System.out.println("emoloyee: "+ e.toString());
         return employeeService.createEmployee(e);
     }
 
@@ -51,8 +52,25 @@ public class EmployeeController {
     }
 
     @PutMapping("/employees/{id}")
-    public ResponseEntity<Employee> fullEmployeeUpdate(@PathVariable Long id, @RequestBody CreateEmployeeDto dto){
+    public ResponseEntity<Employee> fullEmployeeUpdate(@PathVariable Long id, @RequestBody @Valid CreateEmployeeDto dto){
        return ResponseEntity.ok(employeeService.updateEmployee(id, dto));
+    }
+
+    @PatchMapping("/employees/{id}")
+    public ResponseEntity<Employee> partialUpdateEmployee(@PathVariable Long id, @RequestBody PartialUpdateEmployeeDto dto){
+        return ResponseEntity.ok(employeeService.partialUpdateEmployee(id, dto));
+    }
+
+    @DeleteMapping("/employees/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void softDeleteEmployee(@PathVariable Long id){
+        employeeService.softDeleteEmployee(id);
+    }
+
+    @DeleteMapping("/employees/{id}/hard")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void hardDeleteEmployee(@PathVariable Long id){
+        employeeService.hardDeleteEmployee(id);
     }
 }
 

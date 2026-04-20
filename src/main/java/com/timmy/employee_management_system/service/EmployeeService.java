@@ -1,5 +1,6 @@
 package com.timmy.employee_management_system.service;
 import com.timmy.employee_management_system.dto.CreateEmployeeDto;
+import com.timmy.employee_management_system.dto.PartialUpdateEmployeeDto;
 import com.timmy.employee_management_system.entity.Employee;
 import org.springframework.data.domain.Page;
 
@@ -17,4 +18,10 @@ public interface EmployeeService {
     Employee getEmployeeById(Long id);
 
     Employee updateEmployee(Long id, CreateEmployeeDto dto);
+
+    Employee partialUpdateEmployee(Long id, PartialUpdateEmployeeDto dto);
+
+    void softDeleteEmployee(Long id);
+
+    void hardDeleteEmployee(Long id);
 }

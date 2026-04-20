@@ -2,6 +2,7 @@ package com.timmy.employee_management_system.service.impl;
 
 import com.timmy.employee_management_system.Repository.EmployeeRepository;
 import com.timmy.employee_management_system.dto.CreateEmployeeDto;
+import com.timmy.employee_management_system.dto.PartialUpdateEmployeeDto;
 import com.timmy.employee_management_system.entity.Employee;
 import com.timmy.employee_management_system.enums.Position;
 import com.timmy.employee_management_system.exception.DuplicateEmailException;
@@ -23,10 +24,8 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-
 public class EmployeeServiceImpl implements EmployeeService {
 
-    //This method create new employee
     private final EmployeeRepository employeeRepository;
 
     @Override
@@ -137,5 +136,81 @@ public class EmployeeServiceImpl implements EmployeeService {
         emp.setActive(dto.getActive());
         return employeeRepository.save(emp);
 
+    }
+
+    @Override
+    public Employee partialUpdateEmployee(Long id, PartialUpdateEmployeeDto dto){
+        Employee employee = employeeRepository.findById(id).orElseThrow(()->
+                new EmployeeNotFoundException("Employee with id: "+id+" not found"));
+
+        if (dto.getFirstName() != null) {
+            employee.setFirstName(dto.getFirstName());
+        }
+
+        if (dto.getLastName() != null) {
+            employee.setLastName(dto.getLastName());
+        }
+
+        if (dto.getEmail() != null) {
+            if(!employee.getEmail().equals(dto.getEmail())){
+                employeeRepository.findByEmail(dto.getEmail()).ifPresent((e)->{
+                    throw new DuplicateEmailException("Email is already taken");
+                });
+            }
+            employee.setEmail(dto.getEmail());
+        }
+
+        if (dto.getDepartment() != null) {
+            employee.setDepartment(dto.getDepartment());
+        }
+
+        if (dto.getSalary() != null) {
+            employee.setSalary(dto.getSalary());
+        }
+
+        if (dto.getActive() != null) {
+            employee.setActive(dto.getActive());
+        }
+
+        if (dto.getPosition() != null) {
+            Position position = Position.valueOf(dto.getPosition());
+            employee.setPosition(position);
+        }
+
+        if (dto.getDateOfJoining() != null) {
+            employee.setDateOfJoining(
+                    dto.getDateOfJoining()
+                            .atStartOfDay(ZoneId.of("UTC"))
+                            .toInstant()
+                            .toEpochMilli()
+            );
+        }
+
+        return employeeRepository.save(employee);
+    }
+
+    @Override
+    public void softDeleteEmployee(Long id){
+        Employee employee = employeeRepository.findById(id).orElseThrow(()->
+                new EmployeeNotFoundException("Employee with id "+id + " not found")
+                );
+
+        employee.setActive(false);
+        employeeRepository.save(employee);
+    }
+
+    @Override
+    public void hardDeleteEmployee(Long id){
+        Employee employee = employeeRepository.findById(id).orElseThrow(()->
+                new EmployeeNotFoundException("Employee with id "+id + " not found")
+        );
+
+        if(employee.getActive()){
+            employee.setActive(false);
+            employeeRepository.save(employee);
+        }
+        else{
+            employeeRepository.delete(employee);
+        }
     }
 }
