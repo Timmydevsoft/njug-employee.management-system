@@ -6,6 +6,7 @@ import com.timmy.employee_management_system.dto.PartialUpdateEmployeeDto;
 import com.timmy.employee_management_system.entity.Employee;
 import com.timmy.employee_management_system.service.EmployeeService;
 import com.timmy.employee_management_system.service.ExcelService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
@@ -14,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -71,6 +71,15 @@ public class EmployeeController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void hardDeleteEmployee(@PathVariable Long id){
         employeeService.hardDeleteEmployee(id);
+    }
+
+    @GetMapping("/employees/export/excel")
+    public void exportEmployees(
+            @RequestParam(required = false) String department,
+            @RequestParam(required = false) Boolean active,
+            HttpServletResponse response
+    ){
+        excelService.exportEmployees(department, active, response);
     }
 }
 
