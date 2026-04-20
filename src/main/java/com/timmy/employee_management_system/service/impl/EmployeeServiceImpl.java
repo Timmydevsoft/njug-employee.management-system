@@ -115,4 +115,27 @@ public class EmployeeServiceImpl implements EmployeeService {
         Optional<Employee> emp = employeeRepository.findById(id);
         return emp.orElseThrow(()-> new EmployeeNotFoundException("Employee with id "+id+" not found"));
     }
+
+    @Override
+    public  Employee updateEmployee(Long id, CreateEmployeeDto dto){
+        Employee emp = employeeRepository.findById(id).orElseThrow(()-> new EmployeeNotFoundException("Employee with id "+id+" not found"));
+       if(!emp.getEmail().equals(dto.getEmail())){
+           employeeRepository.findByEmail(dto.getEmail()).ifPresent((e)->{
+               throw new DuplicateEmailException("Email is already taken");
+           });
+       }
+
+        Position position = Position.valueOf(dto.getPosition());
+
+       emp.setFirstName(dto.getFirstName());
+       emp.setLastName(dto.getLastName());
+        emp.setEmail(dto.getEmail());
+        emp.setSalary(dto.getSalary());
+        emp.setDepartment(dto.getDepartment());
+        emp.setPosition(position);
+        emp.setDateOfJoining(dto.getDateOfJoining().atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli());
+        emp.setActive(dto.getActive());
+        return employeeRepository.save(emp);
+
+    }
 }

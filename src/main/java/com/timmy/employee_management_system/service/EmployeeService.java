@@ -15,4 +15,6 @@ public interface EmployeeService {
     Page<Employee> getAllEmployees(int page, int size);
 
     Employee getEmployeeById(Long id);
+
+    Employee updateEmployee(Long id, CreateEmployeeDto dto);
 }
