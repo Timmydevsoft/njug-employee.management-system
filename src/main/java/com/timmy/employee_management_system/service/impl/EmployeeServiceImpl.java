@@ -19,6 +19,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+
 public class EmployeeServiceImpl implements EmployeeService {
 
     //This method create new employee
@@ -30,7 +31,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         if(isAnEmployee.isPresent()){
             throw new DuplicateEmailException("Email has been taken");
         }
-        Position position = Position.valueOf(e.getPosition().toUpperCase());
+        Position position = Position.valueOf(e.getPosition());
         boolean isIntern = position ==Position.INTERN;
         boolean salaryIsLessThan30k = e.getSalary().compareTo(new BigDecimal(30000))<0;
         boolean salaryIsLessThan15k = e.getSalary().compareTo(new BigDecimal("15000"))<0;

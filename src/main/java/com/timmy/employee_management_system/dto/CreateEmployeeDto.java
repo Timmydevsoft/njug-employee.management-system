@@ -1,6 +1,7 @@
 package com.timmy.employee_management_system.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.timmy.employee_management_system.enums.Position;
 import jakarta.validation.constraints.*;
 import lombok.Data;
@@ -36,6 +37,7 @@ public class CreateEmployeeDto {
 
     @NotNull
     @PastOrPresent
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfJoining;
 
     @NotNull

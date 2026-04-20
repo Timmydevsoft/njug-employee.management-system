@@ -5,6 +5,8 @@ import com.timmy.employee_management_system.dto.ImportEmployeesExcelResDto;
 import com.timmy.employee_management_system.entity.Employee;
 import com.timmy.employee_management_system.service.EmployeeService;
 import com.timmy.employee_management_system.service.ExcelService;
+import org.springframework.web.bind.annotation.RequestBody;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -25,7 +27,8 @@ public class EmployeeController {
     private final ExcelService excelService;
 
     @PostMapping("/employees")
-    Employee handleCreateEmployee (CreateEmployeeDto e){
+    Employee handleCreateEmployee ( @RequestBody @Valid CreateEmployeeDto e){
+        System.out.println("emoloyee: "+ e.toString());
         return employeeService.createEmployee(e);
     }
 
