@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(InvalidSalaryException.class)
+    @ExceptionHandler(InvalidFileFormatException.class)
     ResponseEntity<ApiError> handleInvalidFileFormatException(InvalidFileFormatException ex){
         ApiError error = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), System.currentTimeMillis());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);

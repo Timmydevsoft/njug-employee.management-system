@@ -118,6 +118,84 @@ public class ExcelServiceImpl implements ExcelService {
     @Override
     public void exportEmployees(String department, Boolean active, HttpServletResponse response){
         List<Employee> employees = employeeService.findByDepartmentAndActiveDept(department, active);
+
+
+        try (Workbook workbook = new XSSFWorkbook()) {
+
+            Sheet sheet = workbook.createSheet("Employees");
+
+            String[] columns = {
+                    "ID", "First Name", "Last Name", "Email",
+                    "Department", "Salary", "Position",
+                    "Date Of Joining", "Active", "Created At", "Updated At"
+            };
+
+            Row header = sheet.createRow(0);
+
+            CellStyle headerStyle = workbook.createCellStyle();
+            Font font = workbook.createFont();
+            font.setBold(true);
+            headerStyle.setFont(font);
+
+            for (int i = 0; i < columns.length; i++) {
+                Cell cell = header.createCell(i);
+                cell.setCellValue(columns[i]);
+                cell.setCellStyle(headerStyle);
+            }
+
+
+            DataFormat format = workbook.createDataFormat();
+
+            CellStyle salaryStyle = workbook.createCellStyle();
+            salaryStyle.setDataFormat(format.getFormat("#,##0.00"));
+
+            int rowIndex = 1;
+
+            for (Employee e : employees) {
+
+                Row row = sheet.createRow(rowIndex++);
+
+                row.createCell(0).setCellValue(e.getId());
+                row.createCell(1).setCellValue(e.getFirstName());
+                row.createCell(2).setCellValue(e.getLastName());
+                row.createCell(3).setCellValue(e.getEmail());
+                row.createCell(4).setCellValue(e.getDepartment());
+
+                Cell salaryCell = row.createCell(5);
+                salaryCell.setCellValue(e.getSalary().doubleValue());
+                salaryCell.setCellStyle(salaryStyle);
+
+                row.createCell(6).setCellValue(e.getPosition().name());
+
+                row.createCell(7).setCellValue(
+                        java.time.Instant.ofEpochMilli(e.getDateOfJoining())
+                                .atZone(java.time.ZoneId.of("UTC"))
+                                .toLocalDate()
+                                .toString()
+                );
+
+                row.createCell(8).setCellValue(e.getActive());
+                row.createCell(9).setCellValue(e.getCreatedAt().toString());
+                row.createCell(10).setCellValue(e.getUpdatedAt().toString());
+            }
+
+            for (int i = 0; i < columns.length; i++) {
+                sheet.autoSizeColumn(i);
+            }
+
+            response.setContentType(
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            );
+
+            String fileName = "employees_" + System.currentTimeMillis() + ".xlsx";
+            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+            workbook.write(response.getOutputStream());
+            response.flushBuffer();
+
+        } catch (Exception ex) {
+            throw new RuntimeException("Error exporting employees Excel", ex);
+        }
     }
 
 }

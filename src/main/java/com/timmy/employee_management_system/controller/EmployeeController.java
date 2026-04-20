@@ -30,7 +30,7 @@ public class EmployeeController {
     }
 
 
-    @PostMapping("/employees/import")
+    @PostMapping("/employees/import/excel")
     public ResponseEntity<?>uploadEmployees(@RequestParam("file")MultipartFile file){
         ImportEmployeesExcelResDto res = excelService.importEmployees(file);
         if(!res.getErrors().isEmpty()){
