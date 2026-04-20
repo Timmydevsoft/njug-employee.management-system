@@ -6,6 +6,7 @@ import com.timmy.employee_management_system.dto.PartialUpdateEmployeeDto;
 import com.timmy.employee_management_system.entity.Employee;
 import com.timmy.employee_management_system.service.EmployeeService;
 import com.timmy.employee_management_system.service.ExcelService;
+import com.timmy.employee_management_system.service.PdfService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -26,6 +29,7 @@ import java.util.List;
 public class EmployeeController {
     private final EmployeeService employeeService;
     private final ExcelService excelService;
+    private final PdfService pdfService;
 
     @PostMapping("/employees")
     Employee handleCreateEmployee ( @RequestBody @Valid CreateEmployeeDto e){
@@ -35,6 +39,7 @@ public class EmployeeController {
 
     @PostMapping("/employees/import/excel")
     public ResponseEntity<?>uploadEmployees(@RequestParam("file")MultipartFile file){
+        System.out.println("File Received and Fired  " + file);
         ImportEmployeesExcelResDto res = excelService.importEmployees(file);
         if(!res.getErrors().isEmpty()){
            return ResponseEntity.badRequest().body(res);
@@ -52,6 +57,19 @@ public class EmployeeController {
     @GetMapping("/employees/{id}")
     public ResponseEntity<Employee> findEmployeeById(@PathVariable Long id){
         return ResponseEntity.ok(employeeService.getEmployeeById(id));
+    }
+
+    @GetMapping("/employees/export/pdf")
+    public void exportEmployeesPdf(HttpServletResponse response) throws IOException {
+        response.setContentType("application/pdf");
+
+        String timestamp = LocalDateTime.now().toString().replace(":", "-");
+        response.setHeader(
+                "Content-Disposition",
+                "attachment; filename=employee_report_" + timestamp + ".pdf"
+        );
+
+        pdfService.exportEmployeesPdf(response);
     }
 
     @PutMapping("/employees/{id}")
