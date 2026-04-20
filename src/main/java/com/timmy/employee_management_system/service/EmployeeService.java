@@ -4,6 +4,7 @@ import com.timmy.employee_management_system.dto.PartialUpdateEmployeeDto;
 import com.timmy.employee_management_system.entity.Employee;
 import org.springframework.data.domain.Page;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface EmployeeService {
@@ -24,4 +25,6 @@ public interface EmployeeService {
     void softDeleteEmployee(Long id);
 
     void hardDeleteEmployee(Long id);
+
+    List<Employee> getEmployeesBySalaryRange(BigDecimal min, BigDecimal max);
 }

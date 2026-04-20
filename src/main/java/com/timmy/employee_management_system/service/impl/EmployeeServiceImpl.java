@@ -213,4 +213,9 @@ public class EmployeeServiceImpl implements EmployeeService {
             employeeRepository.delete(employee);
         }
     }
+
+    @Override
+    public List<Employee> getEmployeesBySalaryRange(BigDecimal min, BigDecimal max){
+        return employeeRepository.findBySalaryRange(min, max);
+    }
 }

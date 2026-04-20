@@ -22,6 +22,11 @@ public interface EmployeeRepository  extends JpaRepository<Employee, Long> {
             @Param("max") BigDecimal max);
 
 
+//    @Query("SELECT e FROM Employee e WHERE (:min IS NULL OR e.salary >= :min) " +
+//            "AND (:max IS NULL OR e.salary <= :max)")
+//    List<Employee> findBySalaryRange(@Param("min") Double min,
+//                                     @Param("max") Double max);
+
     @Query("SELECT e FROM Employee e WHERE " +
             "(:department IS NULL OR e.department = :department) AND " +
             "(:active IS NULL OR e.active = :active)")

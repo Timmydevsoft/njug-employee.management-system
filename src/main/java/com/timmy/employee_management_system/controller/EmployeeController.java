@@ -15,6 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/v1")
@@ -80,6 +83,11 @@ public class EmployeeController {
             HttpServletResponse response
     ){
         excelService.exportEmployees(department, active, response);
+    }
+
+    @GetMapping("/employees/salary-range")
+    public ResponseEntity<List<Employee>> getEmployeeBySalaryRange(@PathVariable BigDecimal min, @PathVariable BigDecimal max){
+        return ResponseEntity.ok(employeeService.getEmployeesBySalaryRange(min, max));
     }
 }
 
