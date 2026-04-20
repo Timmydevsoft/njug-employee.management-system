@@ -5,15 +5,11 @@ import com.timmy.employee_management_system.dto.ImportEmployeesExcelResDto;
 import com.timmy.employee_management_system.entity.Employee;
 import com.timmy.employee_management_system.service.EmployeeService;
 import com.timmy.employee_management_system.service.ExcelService;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -42,5 +38,16 @@ public class EmployeeController {
         return ResponseEntity.ok(res);
     }
 
+    @GetMapping("/employees")
+    public ResponseEntity<?> findAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size ){
+        return ResponseEntity.ok(employeeService.getAllEmployees(page, size));
+    }
+
+    @GetMapping("/employees/{id}")
+    public ResponseEntity<Employee> findEmployeeById(@PathVariable Long id){
+        return ResponseEntity.ok(employeeService.getEmployeeById(id));
+    }
 }
 

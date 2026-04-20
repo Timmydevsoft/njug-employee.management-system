@@ -5,9 +5,13 @@ import com.timmy.employee_management_system.dto.CreateEmployeeDto;
 import com.timmy.employee_management_system.entity.Employee;
 import com.timmy.employee_management_system.enums.Position;
 import com.timmy.employee_management_system.exception.DuplicateEmailException;
+import com.timmy.employee_management_system.exception.EmployeeNotFoundException;
 import com.timmy.employee_management_system.exception.InvalidSalaryException;
 import com.timmy.employee_management_system.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,4 +104,15 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeRepository.findByDepartmentAndActive(department, active);
     }
 
+    @Override
+    public Page<Employee> getAllEmployees(int page, int size){
+        Pageable pageable = PageRequest.of(page, size);
+        return employeeRepository.findAll(pageable);
+    }
+
+    @Override
+    public Employee getEmployeeById(Long id){
+        Optional<Employee> emp = employeeRepository.findById(id);
+        return emp.orElseThrow(()-> new EmployeeNotFoundException("Employee with id "+id+" not found"));
+    }
 }
