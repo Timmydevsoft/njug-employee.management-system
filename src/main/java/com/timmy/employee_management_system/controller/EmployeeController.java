@@ -1,8 +1,8 @@
 package com.timmy.employee_management_system.controller;
 
-import com.timmy.employee_management_system.dto.CreateEmployeeDto;
-import com.timmy.employee_management_system.dto.ImportEmployeesExcelResDto;
-import com.timmy.employee_management_system.dto.PartialUpdateEmployeeDto;
+import com.timmy.employee_management_system.dto.employee.CreateEmployeeDto;
+import com.timmy.employee_management_system.dto.employee.ImportEmployeesExcelResDto;
+import com.timmy.employee_management_system.dto.employee.PartialUpdateEmployeeDto;
 import com.timmy.employee_management_system.entity.Employee;
 import com.timmy.employee_management_system.service.EmployeeService;
 import com.timmy.employee_management_system.service.ExcelService;
@@ -39,7 +39,6 @@ public class EmployeeController {
 
     @PostMapping("/employees/import/excel")
     public ResponseEntity<?>uploadEmployees(@RequestParam("file")MultipartFile file){
-        System.out.println("File Received and Fired  " + file);
         ImportEmployeesExcelResDto res = excelService.importEmployees(file);
         if(!res.getErrors().isEmpty()){
            return ResponseEntity.badRequest().body(res);
@@ -72,6 +71,7 @@ public class EmployeeController {
         pdfService.exportEmployeesPdf(response);
     }
 
+
     @PutMapping("/employees/{id}")
     public ResponseEntity<Employee> fullEmployeeUpdate(@PathVariable Long id, @RequestBody @Valid CreateEmployeeDto dto){
        return ResponseEntity.ok(employeeService.updateEmployee(id, dto));
@@ -103,9 +103,16 @@ public class EmployeeController {
         excelService.exportEmployees(department, active, response);
     }
 
+    @PostMapping("/employees/export/attachment")
+    public String getEmployeeAttachment(@RequestBody String email) throws Exception {
+        return employeeService.sendEmployeeRecordsAsAttachment(email);
+    }
+
     @GetMapping("/employees/salary-range")
     public ResponseEntity<List<Employee>> getEmployeeBySalaryRange(@PathVariable BigDecimal min, @PathVariable BigDecimal max){
         return ResponseEntity.ok(employeeService.getEmployeesBySalaryRange(min, max));
     }
+
+
 }
 

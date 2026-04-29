@@ -1,6 +1,6 @@
 package com.timmy.employee_management_system.service;
-import com.timmy.employee_management_system.dto.CreateEmployeeDto;
-import com.timmy.employee_management_system.dto.PartialUpdateEmployeeDto;
+import com.timmy.employee_management_system.dto.employee.CreateEmployeeDto;
+import com.timmy.employee_management_system.dto.employee.PartialUpdateEmployeeDto;
 import com.timmy.employee_management_system.entity.Employee;
 import org.springframework.data.domain.Page;
 
@@ -16,6 +16,8 @@ public interface EmployeeService {
 
     Page<Employee> getAllEmployees(int page, int size);
 
+    List<Employee> getAllEmployeeForExcelExport();
+
     Employee getEmployeeById(Long id);
 
     Employee updateEmployee(Long id, CreateEmployeeDto dto);
@@ -27,4 +29,6 @@ public interface EmployeeService {
     void hardDeleteEmployee(Long id);
 
     List<Employee> getEmployeesBySalaryRange(BigDecimal min, BigDecimal max);
+
+    String sendEmployeeRecordsAsAttachment(String email)throws Exception;
 }

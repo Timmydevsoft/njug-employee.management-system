@@ -1,4 +1,4 @@
-package com.timmy.employee_management_system.dto;
+package com.timmy.employee_management_system.dto.employee;
 
 import lombok.Data;
 

@@ -1,6 +1,6 @@
 package com.timmy.employee_management_system.service.impl;
-import com.timmy.employee_management_system.dto.CreateEmployeeDto;
-import com.timmy.employee_management_system.dto.ImportEmployeesExcelResDto;
+import com.timmy.employee_management_system.dto.employee.CreateEmployeeDto;
+import com.timmy.employee_management_system.dto.employee.ImportEmployeesExcelResDto;
 import com.timmy.employee_management_system.entity.Employee;
 import com.timmy.employee_management_system.exception.ExcelProcessingException;
 import com.timmy.employee_management_system.exception.InvalidFileFormatException;
@@ -16,6 +16,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -99,6 +102,7 @@ public class ExcelServiceImpl implements ExcelService {
             }
 
         } catch (Exception ex) {
+            System.out.println("ERROR: "+ ex);
             throw new ExcelProcessingException("Error processing Excel file", ex);
         }
         int successCount = validEmpDtos.size();
@@ -117,7 +121,8 @@ public class ExcelServiceImpl implements ExcelService {
 
     @Override
     public void exportEmployees(String department, Boolean active, HttpServletResponse response){
-        List<Employee> employees = employeeService.findByDepartmentAndActiveDept(department, active);
+//        List<Employee> employees = employeeService.findByDepartmentAndActiveDept(department, active);
+        List<Employee> employees = employeeService.getAllEmployeeForExcelExport();
 
 
         try (Workbook workbook = new XSSFWorkbook()) {
@@ -174,9 +179,9 @@ public class ExcelServiceImpl implements ExcelService {
                                 .toString()
                 );
 
-                row.createCell(8).setCellValue(e.getActive());
+                row.createCell(8).setCellValue(Boolean.TRUE.equals(e.getActive()));
                 row.createCell(9).setCellValue(e.getCreatedAt().toString());
-                row.createCell(10).setCellValue(e.getUpdatedAt().toString());
+                row.createCell(10).setCellValue(e.getUpdatedAt() !=null? e.getUpdatedAt().toString(): "");
             }
 
             for (int i = 0; i < columns.length; i++) {
@@ -198,4 +203,81 @@ public class ExcelServiceImpl implements ExcelService {
         }
     }
 
+    public ByteArrayInputStream exportEmployeesStream() {
+
+        List<Employee> employees = employeeService.getAllEmployeeForExcelExport();
+
+        try (Workbook workbook = new XSSFWorkbook();
+             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+
+            Sheet sheet = workbook.createSheet("Employees");
+
+            String[] columns = {
+                    "ID", "First Name", "Last Name", "Email", "Department",
+                    "Salary", "Position", "Date Of Joining", "Active",
+                    "Created At", "Updated At"
+            };
+
+            Row header = sheet.createRow(0);
+
+            CellStyle headerStyle = workbook.createCellStyle();
+            Font font = workbook.createFont();
+            font.setBold(true);
+            headerStyle.setFont(font);
+
+            for (int i = 0; i < columns.length; i++) {
+                Cell cell = header.createCell(i);
+                cell.setCellValue(columns[i]);
+                cell.setCellStyle(headerStyle);
+            }
+
+            DataFormat format = workbook.createDataFormat();
+            CellStyle salaryStyle = workbook.createCellStyle();
+            salaryStyle.setDataFormat(format.getFormat("#,##0.00"));
+
+            int rowIndex = 1;
+
+            for (Employee e : employees) {
+                Row row = sheet.createRow(rowIndex++);
+
+                row.createCell(0).setCellValue(e.getId());
+                row.createCell(1).setCellValue(e.getFirstName());
+                row.createCell(2).setCellValue(e.getLastName());
+                row.createCell(3).setCellValue(e.getEmail());
+                row.createCell(4).setCellValue(e.getDepartment());
+
+                Cell salaryCell = row.createCell(5);
+                salaryCell.setCellValue(e.getSalary().doubleValue());
+                salaryCell.setCellStyle(salaryStyle);
+
+                row.createCell(6).setCellValue(e.getPosition().name());
+
+                row.createCell(7).setCellValue(
+                        java.time.Instant.ofEpochMilli(e.getDateOfJoining())
+                                .atZone(java.time.ZoneId.of("UTC"))
+                                .toLocalDate()
+                                .toString()
+                );
+
+                row.createCell(8).setCellValue(Boolean.TRUE.equals(e.getActive()));
+
+                row.createCell(9).setCellValue(e.getCreatedAt().toString());
+
+                row.createCell(10).setCellValue(
+                        e.getUpdatedAt() != null ? e.getUpdatedAt().toString() : ""
+                );
+            }
+
+            for (int i = 0; i < columns.length; i++) {
+                sheet.autoSizeColumn(i);
+            }
+
+            workbook.write(out);
+
+            return new ByteArrayInputStream(out.toByteArray());
+
+        } catch (Exception ex) {
+            throw new RuntimeException("Error exporting employees Excel", ex);
+        }
+    }
 }

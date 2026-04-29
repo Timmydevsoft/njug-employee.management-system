@@ -1,14 +1,16 @@
 package com.timmy.employee_management_system.service.impl;
 
 import com.timmy.employee_management_system.Repository.EmployeeRepository;
-import com.timmy.employee_management_system.dto.CreateEmployeeDto;
-import com.timmy.employee_management_system.dto.PartialUpdateEmployeeDto;
+import com.timmy.employee_management_system.dto.employee.CreateEmployeeDto;
+import com.timmy.employee_management_system.dto.employee.PartialUpdateEmployeeDto;
 import com.timmy.employee_management_system.entity.Employee;
 import com.timmy.employee_management_system.enums.Position;
 import com.timmy.employee_management_system.exception.DuplicateEmailException;
 import com.timmy.employee_management_system.exception.EmployeeNotFoundException;
 import com.timmy.employee_management_system.exception.InvalidSalaryException;
+import com.timmy.employee_management_system.service.EmailService;
 import com.timmy.employee_management_system.service.EmployeeService;
+import com.timmy.employee_management_system.service.ExcelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -27,6 +31,8 @@ import java.util.Optional;
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final EmailService emailService;
+    private final ExcelService excelService;
 
     @Override
     public Employee createEmployee(CreateEmployeeDto e){
@@ -215,7 +221,19 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public List<Employee> getAllEmployeeForExcelExport(){
+        return employeeRepository.findAll();
+    }
+
+    @Override
     public List<Employee> getEmployeesBySalaryRange(BigDecimal min, BigDecimal max){
         return employeeRepository.findBySalaryRange(min, max);
+    }
+
+    @Override
+    public String sendEmployeeRecordsAsAttachment(String email) throws Exception {
+        ByteArrayInputStream file = excelService.exportEmployeesStream();
+        emailService.sendEmailWithAttachment(email, file);
+        return "email sent successfully";
     }
 }

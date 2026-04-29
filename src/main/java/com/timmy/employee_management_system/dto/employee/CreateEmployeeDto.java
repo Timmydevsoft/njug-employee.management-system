@@ -1,14 +1,12 @@
-package com.timmy.employee_management_system.dto;
+package com.timmy.employee_management_system.dto.employee;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.timmy.employee_management_system.enums.Position;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 
 @Data

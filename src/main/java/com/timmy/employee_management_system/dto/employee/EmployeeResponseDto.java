@@ -1,0 +1,42 @@
+package com.timmy.employee_management_system.dto.employee;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.*;
+import lombok.Data;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+@Data
+public class EmployeeResponseDto {
+    @NotBlank(message = "firstName is required")
+    @Size(max = 50, message = "firstName must not exceed 50 characters")
+    private String firstName;
+
+    @NotBlank(message = "lastName is required")
+    @Size(max = 50, message = "firstName must not exceed 50 characters")
+    private String lastName;
+
+    @NotBlank(message = "email is required")
+    @Email(message = "email must be valid")
+    private String email;
+
+    @NotBlank(message = "department is required")
+    @Size(max = 100, message = "department must not exceed 100 characters")
+    private String department;
+
+    @DecimalMin("0.00")
+    private BigDecimal salary;
+
+    @NotBlank
+    private String position;
+
+    @NotNull
+    @PastOrPresent
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate dateOfJoining;
+
+    @NotNull
+    private Boolean active;
+
+}

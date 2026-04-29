@@ -1,8 +1,7 @@
-package com.timmy.employee_management_system.dto;
+package com.timmy.employee_management_system.dto.employee;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
