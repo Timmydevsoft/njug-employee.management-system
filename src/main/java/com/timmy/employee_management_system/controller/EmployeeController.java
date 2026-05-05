@@ -6,6 +6,7 @@ import com.timmy.employee_management_system.dto.employee.PartialUpdateEmployeeDt
 import com.timmy.employee_management_system.entity.Employee;
 import com.timmy.employee_management_system.service.EmployeeService;
 import com.timmy.employee_management_system.service.ExcelService;
+import com.timmy.employee_management_system.service.ExportService;
 import com.timmy.employee_management_system.service.PdfService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,7 @@ public class EmployeeController {
     private final EmployeeService employeeService;
     private final ExcelService excelService;
     private final PdfService pdfService;
+    private final ExportService exportService;
 
     @PostMapping("/employees")
     Employee handleCreateEmployee ( @RequestBody @Valid CreateEmployeeDto e){
@@ -105,14 +107,13 @@ public class EmployeeController {
 
     @PostMapping("/employees/export/attachment")
     public String getEmployeeAttachment(@RequestBody String email) throws Exception {
-        return employeeService.sendEmployeeRecordsAsAttachment(email);
+        return exportService.shareEmployeeRecToMail(email);
     }
 
     @GetMapping("/employees/salary-range")
     public ResponseEntity<List<Employee>> getEmployeeBySalaryRange(@PathVariable BigDecimal min, @PathVariable BigDecimal max){
         return ResponseEntity.ok(employeeService.getEmployeesBySalaryRange(min, max));
     }
-
 
 }
 

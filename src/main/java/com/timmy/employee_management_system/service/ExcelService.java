@@ -9,8 +9,6 @@ import java.io.ByteArrayInputStream;
 public interface ExcelService {
     ImportEmployeesExcelResDto importEmployees(MultipartFile file);
 
-//    byte[] exportEmployees();
-
     ByteArrayInputStream exportEmployeesStream();
 
     void exportEmployees(String department, Boolean active, HttpServletResponse response);

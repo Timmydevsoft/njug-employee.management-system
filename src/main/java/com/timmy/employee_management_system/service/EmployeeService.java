@@ -30,5 +30,4 @@ public interface EmployeeService {
 
     List<Employee> getEmployeesBySalaryRange(BigDecimal min, BigDecimal max);
 
-    String sendEmployeeRecordsAsAttachment(String email)throws Exception;
 }

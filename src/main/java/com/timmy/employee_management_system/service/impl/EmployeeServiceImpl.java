@@ -31,8 +31,6 @@ import java.util.Optional;
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
-    private final EmailService emailService;
-    private final ExcelService excelService;
 
     @Override
     public Employee createEmployee(CreateEmployeeDto e){
@@ -230,10 +228,4 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeRepository.findBySalaryRange(min, max);
     }
 
-    @Override
-    public String sendEmployeeRecordsAsAttachment(String email) throws Exception {
-        ByteArrayInputStream file = excelService.exportEmployeesStream();
-        emailService.sendEmailWithAttachment(email, file);
-        return "email sent successfully";
-    }
 }
